@@ -1,5 +1,9 @@
 # dsh-jupyter-notebook
 
+[![npm](https://img.shields.io/npm/v/dsh-jupyter-notebook.svg)](https://www.npmjs.com/package/dsh-jupyter-notebook)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/alice0721021-web/dsh-jupyter-notebook/blob/main/LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/alice0721021-web/dsh-jupyter-notebook.svg)](https://github.com/alice0721021-web/dsh-jupyter-notebook)
+
 给 **DeepSeek Harness（DSH）** 用的 Jupyter Notebook 集成：Agent 通过 MCP 工具管理 notebook，同时在 Harness 侧栏提供内嵌编辑/查看面板，可浏览、编辑、运行 `.ipynb` 单元格并查看文本和图片输出。Notebook 文件保持标准 `nbformat 4.5`，可继续用 JupyterLab / VS Code 打开。
 
 面板通过 DSH 原生 Client slot 和 Host HTTP 路由提供，另起的面板 Kernel 与 MCP 子进程 Kernel 独立；面板读写的仍是相同磁盘 `.ipynb` 文件。它支持切换 Notebook 根目录、创建文件、增删改 cell、单步或全部运行，以及显示纯文本和 PNG 输出。HTML 输出为安全起见不执行、不渲染。
