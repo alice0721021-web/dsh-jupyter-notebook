@@ -1,0 +1,12 @@
+.venv/
+.data/
+node_modules/
+examples/.dsh-jupyter/
+examples/*.png
+examples/*.html
+__pycache__/
+*.pyc
+*.log
+*.tmp
+.DS_Store
+Thumbs.db

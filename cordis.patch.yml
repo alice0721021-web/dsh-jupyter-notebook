@@ -1,0 +1,19 @@
+- insert:
+    - id: dsh-jupyter-notebook
+      name: dsh-jupyter-notebook
+      locale:
+        en:
+          title: Jupyter Notebook Workspace
+          description: Browse, edit, and run local Jupyter notebooks inside Harness.
+        zh:
+          title: Jupyter Notebook 工作区
+          description: 在 Harness 中浏览、编辑并运行本地 Jupyter Notebook。
+      # Optional. Without them the panel starts at DSH_JUPYTER_ROOT (or the
+      # process working directory) and uses this package's .venv interpreter.
+      # Add your own values in the profile's cordis.patch.yml:
+      #
+      #   - id: dsh-jupyter-notebook
+      #     config:
+      #       root: /absolute/path/to/notebooks
+      #       python: /absolute/path/to/python
+      config: {}

@@ -1,0 +1,85 @@
+{
+  "name": "dsh-jupyter-notebook",
+  "version": "0.4.0",
+  "description": "Jupyter Notebook integration for DeepSeek Harness: an embedded editor/viewer over local files or a running Jupyter Server, plus MCP tools.",
+  "license": "MIT",
+  "author": "alice0721021-web",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alice0721021-web/dsh-jupyter-notebook.git"
+  },
+  "homepage": "https://github.com/alice0721021-web/dsh-jupyter-notebook#readme",
+  "bugs": {
+    "url": "https://github.com/alice0721021-web/dsh-jupyter-notebook/issues"
+  },
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "cordis",
+    "jupyter",
+    "notebook",
+    "ipynb",
+    "python",
+    "kernel",
+    "mcp"
+  ],
+  "icon": "icon.svg",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./src/*": "./src/*",
+    "./kernel/*": "./kernel/*",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "index.js",
+    "src/**/*.mjs",
+    "kernel/dsh_kernel.py",
+    "scripts/*.mjs",
+    "skill/SKILL.md",
+    "client.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "start": "node src/server.mjs",
+    "smoke": "node scripts/smoke.mjs",
+    "smoke:server": "node scripts/smoke-server.mjs",
+    "smoke:panel": "node scripts/smoke-panel.mjs",
+    "smoke:panel:server": "node scripts/smoke-panel-server.mjs",
+    "test:markdown": "node scripts/test-markdown.mjs",
+    "test:streaming": "node scripts/test-streaming.mjs",
+    "test:route": "node scripts/test-route.mjs",
+    "test": "node scripts/test-markdown.mjs && node scripts/test-route.mjs && node scripts/test-streaming.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/server": "2.4.0"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/client": "^2.2.0",
+    "yaml": "^2.9.1"
+  },
+  "dsh": {
+    "bundle": { "patch": "./cordis.patch.yml" },
+    "client": {
+      "platform": "web",
+      "immediately": true
+    },
+    "engines": { "dsh": ">=0.2.0-rc.1 <0.3.0" }
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  }
+}
+
