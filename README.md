@@ -102,7 +102,13 @@ MCP 服务与面板互不替代：`scripts/install.mjs` 只负责写 profile 里
 
 ### 面板 API 的边界
 
-Host 路由 `/api/dsh-jupyter-notebook` 只接受来自本机回环地址、且 `Content-Type: application/json` 的请求；带 `Origin` 头的请求必须也是本机来源。这样别的网站无法用一个简单表单把请求发进来（跨站写文件/执行代码），而面板自身的 `fetch` 不受影响。根目录永远限制在配置目录与已登记 Workspace 之内，服务目标只允许「本机发现到的」或回环地址。
+Host 路由 `/api/dsh-jupyter-notebook` 先过 **DSH Connection 的认证**：调用 `connection.requestRejection({ headers })`，它带回 Connection 自己的 Host/Origin 校验和浏览器凭据结果；**取不到 Connection 服务时直接 401（fail-closed）**，不会退化成「只靠来源判断」。通过认证后还要求：
+
+- 请求来自本机回环地址；
+- `Content-Type: application/json`（跨站表单做不到，必须走预检）；
+- 带 `Origin` 时必须是本机来源。
+
+这样别的网站无法借简单表单或未认证的本地脚本让面板写文件、起内核；面板自身的同源 `fetch` 带着页面凭据，不受影响。根目录永远限制在配置目录与已登记 Workspace 之内，服务目标只允许「本机发现到的」或回环地址。
 
 ## 工具
 

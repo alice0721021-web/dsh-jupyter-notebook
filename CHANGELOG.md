@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.1 — 2026-11-07
+
+- Host 路由接入 DSH Connection 认证（`connection.requestRejection`），并对未提供 Connection 服务的环境 **fail-closed**：面板 API 不再只靠来源判断。
+- 路由测试补充认证闸门用例（缺服务 401、Connection 拒绝透传、通过后继续）。
+- README 的安全边界说明同步更新。
+
 ## 0.4.0 — 2026-11-06
 
 - 面板新增「Jupyter 服务」来源：自动发现本机 Jupyter Server，复用 JupyterLab 已打开的 kernel；也可手填 URL + token 连接远程服务。

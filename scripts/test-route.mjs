@@ -17,11 +17,14 @@ const ROOT = await fs.mkdtemp(path.join(os.tmpdir(), 'dsh-route-'));
 const PYTHON = process.env.DSH_JUPYTER_PYTHON || path.join(PACKAGE, '.venv', 'Scripts', 'python.exe');
 
 const routes = [];
+/** Stands in for the Host Connection service; the route must fail closed without it. */
+let connection;
 const ctx = {
   effect(fn) { fn(); return () => {}; },
   webServer: { register(route) { routes.push(route); return () => {}; } },
-  get() { return undefined; },
+  get(name) { return name === 'connection' ? connection : undefined; },
 };
+connection = { requestRejection: () => undefined };
 apply(ctx, { root: ROOT, python: PYTHON });
 assert.equal(routes.length, 1, 'the plugin registers exactly one route');
 assert.equal(routes[0].path, '/api/dsh-jupyter-notebook');
@@ -57,6 +60,26 @@ async function call(options) {
 }
 
 try {
+  // Gate 0: the route is fail-closed without Host authentication.
+  connection = undefined;
+  const noAuth = await call({ body: { method: 'list_notebooks', args: { path: '.' } } });
+  assert.equal(noAuth.statusCode, 401, 'a missing Connection service rejects every call');
+  assert.match(noAuth.body, /authenticated Harness connection/);
+
+  connection = { requestRejection: () => 403 };
+  const rejected = await call({ body: { method: 'list_notebooks', args: { path: '.' } } });
+  assert.equal(rejected.statusCode, 403, 'Connection rejections are passed through');
+  connection = { requestRejection: () => 401 };
+  const unauthorized = await call({ body: { method: 'list_notebooks', args: { path: '.' } } });
+  assert.equal(unauthorized.statusCode, 401);
+
+  let seenHeaders = null;
+  connection = { requestRejection: (input) => { seenHeaders = input?.headers; return undefined; } };
+  const admitted = await call({ body: { method: 'list_notebooks', args: { path: '.' } } });
+  assert.equal(admitted.statusCode, 200, 'an accepted request continues');
+  assert.equal(seenHeaders['content-type'], 'application/json', 'the request headers reach Connection');
+  connection = { requestRejection: () => undefined };
+
   // Gate 1: a cross-site form can only send text/plain, which is refused.
   const plain = await call({ headers: { 'content-type': 'text/plain' }, body: { method: 'list_notebooks', args: { path: '.' } } });
   assert.equal(plain.statusCode, 403, 'non-JSON content type is refused');
@@ -127,7 +150,7 @@ try {
   assert.equal(tokenRule.statusCode, 400);
   assert.match(tokenRule.body, /needs its token/);
 
-  console.log('Panel route checks passed: content-type gate, Origin gate, method guard, dispatch, path boundary, NDJSON streaming, JSON contract, rename, delete, remote token rule.');
+  console.log('Panel route checks passed: Connection authentication (fail-closed), content-type gate, Origin gate, method guard, dispatch, path boundary, NDJSON streaming, JSON contract, rename, delete, remote token rule.');
 } finally {
   await disposePanelSessions();
   await fs.rm(ROOT, { recursive: true, force: true });

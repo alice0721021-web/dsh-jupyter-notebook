@@ -68,6 +68,26 @@ async function readBody(request, maxBytes = 2_000_000) {
 }
 
 export function apply(ctx, config = {}) {
+  /**
+   * Connection owns the Host/Origin checks and the browser credential for every
+   * Web route. This endpoint can start kernels and execute code, so it is
+   * fail-closed: without a usable Connection service every call is rejected.
+   * `requestRejection` returns 401/403, or 0 when the route may accept.
+   */
+  const authenticate = (request) => {
+    let connection;
+    try {
+      connection = ctx.get('connection');
+    } catch {
+      connection = undefined;
+    }
+    if (typeof connection?.requestRejection !== 'function') return 401;
+    try {
+      return connection.requestRejection({ headers: request.headers ?? {} }) ?? 0;
+    } catch {
+      return 401;
+    }
+  };
   const normalise = (value) => {
     const resolved = path.resolve(String(value));
     return process.platform === 'win32' ? resolved.toLowerCase() : resolved;
@@ -93,6 +113,11 @@ export function apply(ctx, config = {}) {
       kind: 'exact',
       path: ROUTE,
       async handler(request, response) {
+        const rejection = authenticate(request);
+        if (rejection) {
+          send(response, rejection, { error: 'the notebook panel needs an authenticated Harness connection' });
+          return;
+        }
         if (!isLocalRequest(request)) {
           send(response, 403, { error: 'local requests only' });
           return;

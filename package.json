@@ -1,6 +1,6 @@
 {
   "name": "dsh-jupyter-notebook",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Jupyter Notebook integration for DeepSeek Harness: an embedded editor/viewer over local files or a running Jupyter Server, plus MCP tools.",
   "license": "MIT",
   "author": "alice0721021-web",
@@ -71,15 +71,18 @@
     "yaml": "^2.9.1"
   },
   "dsh": {
-    "bundle": { "patch": "./cordis.patch.yml" },
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
     "client": {
       "platform": "web",
       "immediately": true
     },
-    "engines": { "dsh": ">=0.2.0-rc.1 <0.3.0" }
+    "engines": {
+      "dsh": ">=0.2.0-rc.1 <0.3.0"
+    }
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   }
 }
-
